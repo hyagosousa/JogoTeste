@@ -1,2 +1,167 @@
-# JogoTeste
-Jogo
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Construção de Motorhome</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    #gameArea {
+      width: 100vw;
+      height: 100vh;
+      background-image: url('https://i.imgur.com/V8Nznla.jpg'); /* Oficina com van aberta */
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .item {
+      width: 100px;
+      height: 60px;
+      position: absolute;
+      cursor: grab;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    }
+
+    #cama {
+      background-color: deepskyblue;
+      left: 20px;
+      top: 400px;
+    }
+
+    #bateria {
+      background-color: crimson;
+      left: 20px;
+      top: 500px;
+    }
+
+    .target {
+      position: absolute;
+      width: 100px;
+      height: 60px;
+      border: 2px dashed #555;
+      border-radius: 8px;
+    }
+
+    #targetCama {
+      left: 550px;
+      top: 300px;
+    }
+
+    #targetBateria {
+      left: 700px;
+      top: 400px;
+    }
+
+    #nextButton {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #fase2 {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      background-color: #fff;
+      text-align: center;
+      padding-top: 100px;
+      font-size: 24px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="gameArea">
+  <div id="cama" class="item" draggable="true"></div>
+  <div id="bateria" class="item" draggable="true"></div>
+
+  <div id="targetCama" class="target"></div>
+  <div id="targetBateria" class="target"></div>
+
+  <button id="nextButton">Testar Instalação</button>
+</div>
+
+<div id="fase2">
+  ✅ Cama funcionando corretamente!<br><br>
+  ✅ Bateria instalada com sucesso!<br><br>
+  🚐 Pronto para a próxima etapa da conversão!
+</div>
+
+<script>
+  const cama = document.getElementById("cama");
+  const bateria = document.getElementById("bateria");
+  const targetCama = document.getElementById("targetCama");
+  const targetBateria = document.getElementById("targetBateria");
+  const nextButton = document.getElementById("nextButton");
+
+  let camaOK = false;
+  let bateriaOK = false;
+
+  function makeDraggable(item, target, checkCallback) {
+    let offsetX, offsetY;
+
+    item.addEventListener('mousedown', function(e) {
+      offsetX = e.clientX - item.offsetLeft;
+      offsetY = e.clientY - item.offsetTop;
+      item.style.cursor = 'grabbing';
+
+      function moveAt(event) {
+        item.style.left = (event.clientX - offsetX) + 'px';
+        item.style.top = (event.clientY - offsetY) + 'px';
+      }
+
+      function stopDrag() {
+        document.removeEventListener('mousemove', moveAt);
+        document.removeEventListener('mouseup', stopDrag);
+        item.style.cursor = 'grab';
+        checkCallback();
+      }
+
+      document.addEventListener('mousemove', moveAt);
+      document.addEventListener('mouseup', stopDrag);
+    });
+  }
+
+  function checkPositions() {
+    const c = cama.getBoundingClientRect();
+    const tC = targetCama.getBoundingClientRect();
+    const b = bateria.getBoundingClientRect();
+    const tB = targetBateria.getBoundingClientRect();
+
+    camaOK = Math.abs(c.left - tC.left) < 30 && Math.abs(c.top - tC.top) < 30;
+    bateriaOK = Math.abs(b.left - tB.left) < 30 && Math.abs(b.top - tB.top) < 30;
+
+    if (camaOK && bateriaOK) {
+      nextButton.style.display = 'block';
+    } else {
+      nextButton.style.display = 'none';
+    }
+  }
+
+  nextButton.addEventListener('click', function() {
+    document.getElementById("gameArea").style.display = "none";
+    document.getElementById("fase2").style.display = "block";
+  });
+
+  makeDraggable(cama, targetCama, checkPositions);
+  makeDraggable(bateria, targetBateria, checkPositions);
+</script>
+
+</body>
+</html>
