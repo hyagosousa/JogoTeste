@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Construção de Motorhome</title>
+  <title>Montagem de Motorhome</title>
   <style>
     body {
       margin: 0;
@@ -13,7 +13,7 @@
     #gameArea {
       width: 100vw;
       height: 100vh;
-      background-image: url('https://i.imgur.com/MWyjzR6.jpg'); /* Oficina real */
+      background-image: url('https://i.imgur.com/MWyjzR6.jpg'); /* Oficina */
       background-size: cover;
       background-position: center;
       position: relative;
@@ -23,7 +23,7 @@
     #van {
       position: absolute;
       width: 600px;
-      bottom: 50px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 1;
@@ -37,15 +37,9 @@
       z-index: 2;
     }
 
-    #cama {
-      left: 50px;
-      top: 400px;
-    }
-
-    #bateria {
-      left: 50px;
-      top: 520px;
-    }
+    #cama { left: 40px; top: 420px; }
+    #armario { left: 40px; top: 540px; }
+    #pia { left: 40px; top: 660px; }
 
     .target {
       position: absolute;
@@ -54,15 +48,9 @@
       border: 2px dashed transparent; /* invisível */
     }
 
-    #targetCama {
-      left: calc(50% - 150px);
-      top: 420px;
-    }
-
-    #targetBateria {
-      left: calc(50% + 100px);
-      top: 470px;
-    }
+    #targetCama { left: calc(50% - 180px); top: 460px; }
+    #targetArmario { left: calc(50% - 60px); top: 460px; }
+    #targetPia { left: calc(50% + 60px); top: 460px; }
 
     #nextButton {
       position: absolute;
@@ -94,30 +82,37 @@
 
 <div id="gameArea">
   <img id="van" src="https://i.imgur.com/Gg8g47Z.png" alt="Van traseira">
+
   <img id="cama" class="item" src="https://i.imgur.com/JoTj9SE.png" alt="Cama">
-  <img id="bateria" class="item" src="https://i.imgur.com/7hfFhTo.png" alt="Bateria">
+  <img id="armario" class="item" src="https://i.imgur.com/kdiKcUr.png" alt="Armário">
+  <img id="pia" class="item" src="https://i.imgur.com/ghQ9U8A.png" alt="Pia">
 
   <div id="targetCama" class="target"></div>
-  <div id="targetBateria" class="target"></div>
+  <div id="targetArmario" class="target"></div>
+  <div id="targetPia" class="target"></div>
 
-  <button id="nextButton">Testar Instalação</button>
+  <button id="nextButton">Próxima Fase</button>
 </div>
 
 <div id="fase2">
-  ✅ Cama funcionando corretamente!<br><br>
-  ✅ Bateria instalada com sucesso!<br><br>
-  🚐 Pronto para a próxima etapa da conversão!
+  ✅ Todos os móveis foram instalados com sucesso!<br><br>
+  🔧 Próxima etapa: Instalação elétrica e hidráulica.
 </div>
 
 <script>
   const cama = document.getElementById("cama");
-  const bateria = document.getElementById("bateria");
+  const armario = document.getElementById("armario");
+  const pia = document.getElementById("pia");
+
   const targetCama = document.getElementById("targetCama");
-  const targetBateria = document.getElementById("targetBateria");
+  const targetArmario = document.getElementById("targetArmario");
+  const targetPia = document.getElementById("targetPia");
+
   const nextButton = document.getElementById("nextButton");
 
   let camaOK = false;
-  let bateriaOK = false;
+  let armarioOK = false;
+  let piaOK = false;
 
   function makeDraggable(item, checkCallback) {
     let offsetX, offsetY;
@@ -145,15 +140,15 @@
   }
 
   function checkPositions() {
-    const c = cama.getBoundingClientRect();
-    const tC = targetCama.getBoundingClientRect();
-    const b = bateria.getBoundingClientRect();
-    const tB = targetBateria.getBoundingClientRect();
+    const isClose = (a, b) => Math.abs(a - b) < 50;
 
-    camaOK = Math.abs(c.left - tC.left) < 50 && Math.abs(c.top - tC.top) < 50;
-    bateriaOK = Math.abs(b.left - tB.left) < 50 && Math.abs(b.top - tB.top) < 50;
+    const pos = (el) => el.getBoundingClientRect();
 
-    if (camaOK && bateriaOK) {
+    camaOK = isClose(pos(cama).left, pos(targetCama).left) && isClose(pos(cama).top, pos(targetCama).top);
+    armarioOK = isClose(pos(armario).left, pos(targetArmario).left) && isClose(pos(armario).top, pos(targetArmario).top);
+    piaOK = isClose(pos(pia).left, pos(targetPia).left) && isClose(pos(pia).top, pos(targetPia).top);
+
+    if (camaOK && armarioOK && piaOK) {
       nextButton.style.display = 'block';
     } else {
       nextButton.style.display = 'none';
@@ -166,7 +161,8 @@
   });
 
   makeDraggable(cama, checkPositions);
-  makeDraggable(bateria, checkPositions);
+  makeDraggable(armario, checkPositions);
+  makeDraggable(pia, checkPositions);
 </script>
 
 </body>
